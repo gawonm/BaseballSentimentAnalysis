@@ -302,3 +302,6 @@ AutoML이나 GridSearch를 통한 성능 개선 여지가 존
 사용자의 질문이나 불만에 대해 사전 감정 분석 + 대응 메
 시지 자동 생성이 가능
 
+[포스터발표] 
+https://github.com/gawonm/BaseballSentimentAnalysis/blob/main/%ED%8F%AC%EC%8A%A4%ED%84%B0%EC%B5%9C%EC%A2%85%EB%B3%B8_5%EC%A1%B0.pdf
+![image](https://github.com/user-attachments/assets/d6969c60-d18e-4125-8f13-14b47a7f5302)
