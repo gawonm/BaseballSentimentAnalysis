@@ -94,6 +94,7 @@ labeling-tool/
 # ✏️ EDA (Exploratory Data Analysis)
 - 데이터의 감정 레이블 분포를 파악하여 모델 학습 전 클래스 불균형 여부 진단 
 ![image](https://github.com/user-attachments/assets/707dc3dc-41c6-4170-8fc4-e46e8fd6acf0)
+
 전체 4,440개의 댓글 중,
 긍정 레이블(1)이 약 56.5%, 부정 레이블(0)이 약 43.5%로 구성
 
@@ -104,6 +105,18 @@ labeling-tool/
 
 레이블 간 길이 차이는 크지 않음
 ![image](https://github.com/user-attachments/assets/cadb1a13-5931-4054-87d9-fce8ebf78a56)
+
+- 댓글 좋아요 수 분포 및 감정 레이블에 따른 반응 차이 분석
+![image](https://github.com/user-attachments/assets/812a54c4-6049-43c8-8821-9975d61a7584)
+
+댓글 좋아요 수는 대부분 0~5개 이내로 분포하며, 일부 극단값을 포함해 분포가 right-skewed함 (비대칭)
+
+긍정 레이블(1)의 댓글이 부정(0)보다 좋아요 수 중앙값·평균이 모두 높음
+
+→ 감정 표현과 사용자 반응 사이에 연관 가능성 시사
+
+# 데이터 전처리 
+
 
 
 # 🧠 사용 모델
