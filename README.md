@@ -89,7 +89,7 @@ labeling-tool/
 
 > https://labeling-tool-xkktcwsxbfcsc6r97cbyuf.streamlit.app/
 
-![image.png](https://github.com/gawonm/BaseballSentimentAnalysis/blob/main/label.png)
+![label.png](https://github.com/gawonm/BaseballSentimentAnalysis/blob/main/label.png)
 
 # 🧠 사용 모델
 ## 💬 감정 분류
