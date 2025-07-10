@@ -13,7 +13,7 @@
 그럼에도 불구하고, 이러한 비정형 감성 데이터를 정량적으로 분석하고 활용하려는 체계적인 연구는 여전히 부족한 실정이다.
 
 <KBO 관중 현황 통계 (2018-2024)>
-![image.png](https://github.com/gawonm/BaseballSentiment/blob/main/image.png)
+![kbo.png](https://github.com/gawonm/BaseballSentimentAnalysis/blob/main/kbo.png)
 
 ### 목적 
 본 연구는 KBO 리그 하이라이트 영상의 댓글 데이터를 수집·정제한 후, 이를 기반으로 감정 분류 및 요약 모델을 개발하여 긍정 및 부정 여론을 자동 분석하는 AI 시스템을 제안한다. 이를 통해 팬 반응을 정량화하여 팀 전략 수립 및 선수 피드백에 실질적으로 활용할 수 있는 데이터 기반의 의사결정 지원 체계를 마련하는 것을 목표로 한다.
