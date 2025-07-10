@@ -116,13 +116,189 @@ labeling-tool/
 → 감정 표현과 사용자 반응 사이에 연관 가능성 시사
 
 # 데이터 전처리 
+1. 원본 데이터 확인
+![image](https://github.com/user-attachments/assets/7ddc0d3a-8d50-478a-b8b0-f8008928bb18)
 
+2. 텍스트 정제 
+![image](https://github.com/user-attachments/assets/106303b8-a8b7-453f-a1b0-cb6673d7e237)
+
+3. 형태소 분석 + 불용어 제거
+![image](https://github.com/user-attachments/assets/e187a2d7-7456-41ab-867c-e8976bc39673)
+
+4. 시퀀스 변환
+![image](https://github.com/user-attachments/assets/b96910c5-3170-4004-ad20-ae2bb191a072)
+
+5. 시퀀스 길이 정규화
+![image](https://github.com/user-attachments/assets/e06454ef-368d-4c1d-897b-29c8f6aed353)
 
 
 # 🧠 사용 모델
+- RNN 기반 : LSTM, GRU
+- Transformers 기반 : KoBERT, KoRoBERTa,**KoELECTRA**
+![image](https://github.com/user-attachments/assets/928ed417-3de5-45e1-88bd-9fdf4abfd634)
+
 ## 💬 감정 분류
 ### 1. RNN 기반 
-### LSTM 
+### 1-1. LSTM 
+- LSTM(Long Short-Term Memory)은 RNN의 한 종류
+- 기울기 소실 문제를 해결하여 장기 의존성 처리 가능
+- 셀 상태(cell state)를 통해 중요한 정보를 장기간 유지
+![image](https://github.com/user-attachments/assets/328cf62e-2c31-4999-a991-baf810cb1e90)
+
+- Optimizer : Adam, 안정적 학습을 위한 gradient clipping 적용
+- Loss : Binary Crossentropy
+- EarlyStopping
+- ReduceLROnPlateau
+- ModelCheckPoint
+- Epochs : 최대 200
+- Batch Size : 64
+- Validation set : 학습데이터의 20%
+
+### 1-2. GRU 
+- LSTM을 발전시킨 구조
+- 게이트 수 3 → 2 (Forget Gate 제거)
+- 단순화된 구조로 학습 속도 개선
+- 파라미터 수 감소 → 연산 효율 ↑
+- 유사한 성능 유지 (성능-효율 균형)
+
+  LSTM 층만 GRU 층으로 대체 (LSTM과 동일한 구조 & 학습 조건 사용)
+
+  -> parameter 수가 줄어드는 것 확인
+  
+LSTM은 적은 epoch에서 최적 모델을 저장했지만, 각 epoch 실행 시간이 더 김
+GRU는 더 많은 epoch이 필요했지만, 전체 실행 시간은 유사하거나 더 짧음
+
+최종 성능 
+
+LSTM : 72%
+
+GRU : 70.6%
+
+### 2. Transformers 기반 
+### 2-1. KoBERT 
+### 2-2. RoBERTa
+![image](https://github.com/user-attachments/assets/84a665b6-4559-41ea-bed8-e891dcc3042f)
+1. Tokenizer 및 인코딩
+2. Dataset, DataLoader 구성
+3. 학습 루프 및 평가 수행
+4. Epoch별 정확도 및 손실 시각화
+5. Confusion Matrix 및 최종 테스트 성능
+
+최종 성능 
+
+KoBERT : 78.8%
+
+RoBERTa : 83.4%
+
+### 2-3. KoELECTRA 
+![image](https://github.com/user-attachments/assets/4ebb9df8-ffc2-48ca-8ac1-b4d01619c27c)
+01. 라이브러리 및 환경 설정
+02. 데이터셋 정의
+CommentDataset: 댓글을 토크나이즈해서 input_ids, attention_mask, labels 반환
+03. 데이터 전처리 및 분할
+학습데이터:검증데이터 = 80:20
+04. Tokenization + Dataset 구성
+-ElectraTokenizer 사용
+-CommentDataset 클래스로 tokenized input 구성
+-DataLoader 구성 (shuffle=True for train)
+05. 모델 구성
+CustomElectra: ElectraModel 위에 dropout + linear layer 추가 → 이진 분류용 로짓 출력
+
+num_labels=1
+
+손실 함수: BCEWithLogitsLoss() 사용 → sigmoid와 함께 이진 분류 설계
+
+06. 하이퍼파라미터 설정
+Learning Rate = 2e-5
+
+KoELECTRA는 Pretrained 모델 → 일반적으로 1e-5 ~ 5e-5 사이 권장
+2e-5는 논문 기반 실험들과 HuggingFace 권장 값에도 부합
+
+MAX_LEN = 128
+
+대부분의 댓글 128token 이내
+성능/효율성 측면에서 균형 잡힌 값으로 선택
+
+PATIENCE = 5 + EarlyStopping
+
+F1 score 기준 5 epoch 연속 성능 미개선 시 학습 중단
+불필요한 overfitting 방지 + 시간 단축
+
+07. 모델 학습 (Train Baseline Model)
+학습 루프:
+1.train 모드로 forward + backward
+2.optimizer 업데이트 + gradient clipping
+3.검증 시에는 sigmoid 후 THRESHOLD 기반으로 분류
+epoch마다 loss/accuracy/F1 저장 및 출력
+EarlyStopping 조건 충족하면 중단
+
+08. EarlyStopping
+EarlyStopping 구현 (PATIENCE = 5, 기준: F1)
+F1-score를 기준으로 삼은 이유: 불균형 감정 데이터에 더 적합
+
+## 최종 선정 모델 : KoELECTRA 
+학습 결과 요약 (Epoch별 주요 성능)
+![image](https://github.com/user-attachments/assets/7a08ba19-b11c-4e51-a854-1af715abfbab)
+![image](https://github.com/user-attachments/assets/abef0ce9-0ae3-4d63-ab70-abdca4d149d5)
+![image](https://github.com/user-attachments/assets/58d58405-04d9-4a28-9ad1-f6958a4c1b70)
+
+최종 성능 
+
+KoELECTRA : 85.4%
+![image](https://github.com/user-attachments/assets/6fe552f5-0164-4f0e-8d51-9e985345dd29)
+
+### 오답 분석 
+![image](https://github.com/user-attachments/assets/b8224644-3018-45b6-8146-bae2117ddb36)
+
+### Test Data 댓글 분석 
+![image](https://github.com/user-attachments/assets/fcac52fc-4e50-4b4c-a90b-5435a0e43544)
 
 
+## 긍/부정 댓글 요약 
+## 1. TF-IDF 
+![image](https://github.com/user-attachments/assets/19e0c02b-2509-4129-bb86-4450b6b8b4c2)
+![image](https://github.com/user-attachments/assets/c732b783-2195-426f-b4b5-27560fd7bdb5)
+
+## 2. KoBART 요약 
+![image](https://github.com/user-attachments/assets/084f0f8b-25db-4c20-8098-2e88576fbedd)
+
+# 기대효과 및 의의 
+
+1.  팬 커뮤니케이션의 자동화 기반 마련
+- 팬 댓글을 자동으로 감정 분류하고 요약함으로써, 실시간
+으로 팬반응을 파악하고 대응할 수 있는 기반 마련
+- 수작업 모니터링 대비 시간과 인력 비용을 줄이고, 의사결
+정의 객관성 확보
+
+2. 한국어 기반 감정 분석요약 기술의 실제 적용
+- KoBERT, KoELECTRA 등 한국어 NLP 모델을
+실 데이터에 적용하여 모델별 특성과 성능을 검증
+- 고객 리뷰 분석, SNS 대응, 민원 처리 등
+다양한 분야로 확장 가능한 기술 기반을 마련
+➜ 팬 의견을 데이터화하여 실시간 여론 분석 및 전략
+수립에 활용할 수 있는 인공지능 기반 솔루션을 제시
+
+## 개선 방안 
+1. 라벨링 데이터 품질 개선
+현재 라벨링은 수작업 기준에 따라 진행되어 주관적 편차
+가 존재함
+향후 활성 학습 기법을 도입하여 정확도와 일관성 향상
+2. 모델 다양성 및 하이퍼파라미터 튜닝 확대
+세부 하이퍼파라미터 최적화 작업이 제한적이었기에
+AutoML이나 GridSearch를 통한 성능 개선 여지가 존
+재함
+3. 요약 모델 정밀도 개선
+4. 피드백 생성 기능의 고도화
+
+## 활용 방안 
+1. 스포츠 구단의 팬덤 분석 및 전략 기획
+팬 댓글을 실시간으로 분석해 이슈 발생 시 신속한 여론 파
+악 및 대응 가능
+2. 유튜브·SNS 댓글 자동 분석 시스템 개발
+본 프로젝트 파이프라인은 유튜브 댓글 외에도 인스타그
+램, 네이버 스포츠 기사 등으로 확장 가능
+3. AI 커뮤니케이션 플랫폼과의 연계
+요약 결과를 챗봇, 피드백 자동 응답 시스템 등과 연계하면,
+사용자의 질문이나 불만에 대해 사전 감정 분석 + 대응 메
+시지 자동 생성이 가능
 
